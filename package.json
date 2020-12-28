@@ -12,7 +12,7 @@
   "author": "Yaoming Huang",
   "license": "ISC",
   "dependencies": {
-    "@1campus/jsonx": "^0.0.4",
+    "@1campus/jsonx": "^0.0.5",
     "got": "^11.8.1"
   },
   "devDependencies": {
