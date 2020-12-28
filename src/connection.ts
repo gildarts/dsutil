@@ -18,7 +18,7 @@ export class Connection {
     ) { }
 
     public async connect(): Promise<Connection> {
-        
+
         if(this.securityToken instanceof SessionSecurityToken) {
             this.session = this.securityToken;
             return this;
