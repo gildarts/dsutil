@@ -2,8 +2,8 @@
   "name": "@1campus/dsutil",
   "version": "0.0.3",
   "description": "DSA Client Library.",
-  "main": "dist/dsutil.js",
-  "types": "./index.ts",
+  "main": "dsutil.js",
+  "types": "./index.d.ts",
   "scripts": {
     "start": "webpack-dev-server",
     "deploy": "npm publish --access=public",
