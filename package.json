@@ -1,6 +1,6 @@
 {
   "name": "@1campus/dsutil",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "DSA Client Library.",
   "main": "dsutil.js",
   "types": "./index.d.ts",
@@ -12,7 +12,7 @@
   "author": "Yaoming Huang",
   "license": "ISC",
   "dependencies": {
-    "@1campus/jsonx": "^0.0.1",
+    "@1campus/jsonx": "^0.0.4",
     "got": "^11.8.1"
   },
   "devDependencies": {
