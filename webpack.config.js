@@ -61,6 +61,7 @@ module.exports = {
         // 需要指定 .js，不然有些東西還是會爆掉。
         extensions: ['.ts', '.js'], // https://webpack.js.org/configuration/resolve/#resolve-extensions
         alias: {
+            stream: './src/stream.ts',
             // rq$: path.resolve(__dirname, 'src/require.ts'),
         },
         plugins: [

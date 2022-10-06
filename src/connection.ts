@@ -1,95 +1,113 @@
 import { SecurityToken, Envelope, SessionSecurityToken } from './envelope';
 import { AccessPoint } from './access_point';
-import { HttpClient } from './http_client';
-import { Jsonx } from '@1campus/jsonx';
-import { ElementCompact } from 'xml-js';
+import { DSAHttpClient } from './dsa_http_client';
+import { XElement } from './xelement';
+import { DSAError } from './errors';
 
 export const ConnectService = 'DS.Base.Connect';
 
 export class Connection {
+  private session!: SecurityToken;
 
-    private session: SecurityToken;
+  private version!: string;
 
-    private version: string;
+  private create_at: Date;
 
-    constructor(
-        public readonly accessPoint: AccessPoint,
-        private readonly securityToken: SecurityToken
-    ) { }
+  constructor(
+    public readonly accessPoint: AccessPoint,
+    private readonly securityToken: SecurityToken,
+  ) {
+    this.create_at = new Date();
+  }
 
-    public async connect(): Promise<Connection> {
+  public get createAt() {
+    return this.create_at;
+  }
 
-        if(this.securityToken instanceof SessionSecurityToken) {
-            this.session = this.securityToken;
-            return this;
-        }
-
-        if(!this.useSession) return this;
-
-        const { applicationUrl, contract } = this.accessPoint;
-
-        const envelope = new Envelope();
-        envelope.targetContract = contract;
-        envelope.targetService = ConnectService;
-        envelope.credential = this.securityToken;
-        envelope.setBody('<RequestSessionID />');
-
-        const rsp = await HttpClient.post(applicationUrl, envelope.toString());
-
-        const rspenv = new Envelope(rsp.body)
-
-        if(rspenv.code !== '0') {
-            throw new Error(rspenv.message);
-        }
-
-        const rspbody = rspenv.getBody();
-        const sessionId = rspbody.child('SessionID').text
-
-        if(!sessionId) {
-            throw new Error('Session Not Supported.');
-        }
-
-        this.session = new SessionSecurityToken({ SessionID: sessionId });
-        this.version = rspenv.header('Version').text;
-
-        return this;
+  public async connect(): Promise<Connection> {
+    if (this.securityToken instanceof SessionSecurityToken) {
+      this.session = this.securityToken;
+      return this;
     }
 
-    public getSession() {
-        return this.session;
+    if (!this.useSession) {
+      return this;
     }
 
-    /** 取得 DSA 的核心版本。 */
-    public getVersion() {
-        return this.version;
+    const { applicationUrl, contract } = this.accessPoint;
+
+    const envelope = new Envelope();
+    envelope.targetContract = contract;
+    envelope.targetService = ConnectService;
+    envelope.credential = this.securityToken;
+    envelope.setBody('<RequestSessionID />');
+
+    const rsp = await DSAHttpClient.post(applicationUrl, envelope.toString());
+
+    const rspenv = new Envelope(rsp?.body! as any);
+
+    if (rspenv.code !== '0') {
+      throw new DSAError(rspenv.message, rspenv.code);
     }
 
-    /** 是否使用 session 機制。 */
-    public useSession: boolean = true;
+    const rspbody = rspenv.getBody();
+    const sessionId = rspbody.child('SessionID').text;
 
-    public async send(service: string, body?: string | Jsonx | ElementCompact) {
-        const { applicationUrl, contract } = this.accessPoint;
-
-        if(!!!this.session) {
-            throw new Error('請先連線後再呼叫 Service。');
-        }
-
-        const envelope = new Envelope();
-        envelope.targetContract = contract;
-        envelope.targetService = service;
-        envelope.credential = this.session;
-        envelope.setBody(body);
-
-        const rsp = await HttpClient.post(applicationUrl, envelope.toString());
-
-        const rspenv = new Envelope(rsp.body)
-
-        if(rspenv.code !== '0') {
-            throw new Error(rspenv.message);
-        }
-
-        return rspenv.getBody();
+    if (!sessionId) {
+      throw new Error('Session Not Supported.');
     }
+
+    this.session = new SessionSecurityToken({ SessionID: sessionId });
+    this.version = rspenv.header('Version').text;
+
+    return this;
+  }
+
+  public getSession() {
+    return this.session;
+  }
+
+  /** 取得 DSA 的核心版本。 */
+  public getVersion() {
+    return this.version;
+  }
+
+  /** 是否使用 session 機制。 */
+  public useSession: boolean = true;
+
+  /**
+   *
+   * @param service 服務名稱。
+   * @param body Xml 字串、Json 物件或是 Jsonx 物件。
+   * @returns
+   */
+  public async send(service: string, body?: string | XElement | any) {
+    const { applicationUrl, contract } = this.accessPoint;
+
+    if (!this.session) {
+      throw new Error('請先連線後再呼叫 Service。');
+    }
+
+    const envelope = new Envelope();
+    envelope.targetContract = contract;
+    envelope.targetService = service;
+    envelope.credential = this.session;
+    envelope.setBody(body);
+
+    const rsp = await DSAHttpClient.post(applicationUrl, envelope.toString());
+
+    const rspenv = new Envelope(rsp?.body! as any);
+
+    if (rspenv.code !== '0') {
+      throw new DSAError(
+        rspenv.message,
+        rspenv.code,
+        rspenv.getBody().toCompactJson(),
+      );
+    }
+
+    return rspenv.getBody();
+  }
 }
 
 // async function main() {
@@ -104,7 +122,7 @@ export class Connection {
 //     // const body = '<Request><ContractName>1campus.mobile.v2.student</ContractName></Request>';
 
 //     // const body = new Jsonx({ Request: { ContractName: { _text: '1campus.mobile.v2.student' } } });
-    
+
 //     const body = new Jsonx();
 //     body.child('Request', 'ContractName').text = '1campus.mobile.v2.student';
 
