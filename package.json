@@ -1,6 +1,6 @@
 {
   "name": "@1campus/dsutil",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "DSA Client Library.",
   "main": "dsutil.js",
   "types": "./index.d.ts",

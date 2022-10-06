@@ -1,6 +1,6 @@
 {
    "name": "@1campus/dsutil",
-   "version": "0.1.1",
+   "version": "0.1.2",
    "description": "DSA Client Library.",
    "main": "./dsutil.js",
    "types": "./index.d.ts",
@@ -26,6 +26,9 @@
       "webpack": "^4.15.1",
       "webpack-cli": "^3.0.8",
       "webpack-dev-server": "^3.1.4"
+   },
+   "peerDependencies": {
+      "xml-js": "^1.6.11"
    },
    "repository": {
       "type": "git",
