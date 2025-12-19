@@ -1,34 +1,32 @@
 {
   "name": "@1campus/dsutil",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "DSA Client Library.",
   "main": "dsutil.js",
   "types": "./index.d.ts",
   "scripts": {
     "start": "webpack-dev-server",
     "deploy": "npm publish --access=public",
-    "build": "yarn webpack"
+    "build": "webpack"
   },
   "author": "Yaoming Huang",
   "license": "ISC",
   "dependencies": {
-    "@1campus/jsonx": "^0.0.5",
-    "got": "^11.8.1"
+    "got": "^11.8.1",
+    "xml-js": "^1.6.11"
   },
   "devDependencies": {
     "@types/got": "^9.6.11",
+    "@types/node": "^25.0.3",
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.2",
     "ts-loader": "^4.4.2",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
     "tslib": "^2.0.0",
-    "typescript": "^3.9.3",
+    "typescript": "^5.9.3",
     "webpack": "^4.15.1",
     "webpack-cli": "^3.0.8",
     "webpack-dev-server": "^3.1.4"
-  },
-  "peerDependencies": {
-    "xml-js": "^1.6.11"
   },
   "repository": {
     "type": "git",

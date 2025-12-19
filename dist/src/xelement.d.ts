@@ -1,4 +1,4 @@
-import { ElementCompact } from 'xml-js';
+import type { ElementCompact } from "xml-js";
 /** 提供以 Xml 概念操作 JSON 結構。 */
 export declare class XElement implements Iterable<XElement> {
     static parse(xml: string): XElement;
@@ -50,10 +50,7 @@ export declare class XElement implements Iterable<XElement> {
     exists(...name: string[]): boolean;
     /** 轉換成 Xml 字串格式。 */
     toXmlString(rootName?: string): string;
-    /** 轉換成簡單 JSON 格式，無法處理數字型別，所有的值都會是字串。*/
-    toCompactJson(): string;
     private checkIsArray;
     private checkNotArray;
     private getChild;
 }
-/** ================== */

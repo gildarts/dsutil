@@ -1,4 +1,4 @@
-import { ElementCompact } from 'xml-js';
+import type { ElementCompact } from 'xml-js';
 import { XElement } from './xelement';
 export declare class Envelope {
     private envelope;
@@ -48,13 +48,6 @@ export declare class PassportSecurityToken extends SecurityToken {
     constructor(passportXml: string);
 }
 export declare class PassportAccessToken extends SecurityToken {
-    constructor(secrets: {
-        AccessToken: string;
-    });
-    get accessToken(): string;
-    set accessToken(val: string);
-}
-export declare class AccessTokenSecurityToken extends SecurityToken {
     constructor(secrets: {
         AccessToken: string;
     });

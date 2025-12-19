@@ -1,62 +1,47 @@
 export class DSAHttpClient {
-  /** TODO: 需要優化可靠度。 */
-  public static async post(url: string, xmlString?: string) {
+
+  public static async post(url: string, xmlString?: string, timeoutMs: number = 5000) {
     try {
-      const response = await fetch(url, {
+      // 使用 Promise.race 強制 timeout（因為 Bun 的 AbortSignal 在連線失敗時不會生效）
+      const fetchPromise = fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'text/xml',
+          'Content-Type': 'text/xml'
         },
-        body: xmlString,
-      });
-      let xmlStrRsp = await response.text();
+        body: xmlString
+      }).then(r => r.text());
 
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('TIMEOUT')), timeoutMs)
+      );
+
+      const xmlStrRsp = await Promise.race([fetchPromise, timeoutPromise]);
       return { body: xmlStrRsp };
-    } catch (error) {
+    } catch (error: any) {
+      if (error.message === 'TIMEOUT') {
+        throw new Error(`Request timeout after ${timeoutMs}ms`);
+      }
+      console.log('fetch 炸了！fetch 炸了！fetch 炸了！fetch 炸了！fetch 炸了！fetch 炸了！fetch 炸了！')
       console.error(error);
-      console.log(`fetch 炸了!fetch 炸了!fetch 炸了!${url}`);
-      console.log(xmlString);
-      return { body: {} };
+      throw error;
     }
   }
 
-  public static async get(url: string) {
-    return fetch(url)
-      .then(function (response) {
-        return response.text();
-      })
-      .then(function (rsp) {
-        return { body: rsp };
-      });
+  public static async get(url: string, timeoutMs: number = 5000) {
+    try {
+      // 使用 Promise.race 強制 timeout
+      const fetchPromise = fetch(url).then(r => r.text());
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('TIMEOUT')), timeoutMs)
+      );
+
+      const rsp = await Promise.race([fetchPromise, timeoutPromise]);
+      return { body: rsp };
+    } catch (error: any) {
+      if (error.message === 'TIMEOUT') {
+        throw new Error(`Request timeout after ${timeoutMs}ms`);
+      }
+      throw error;
+    }
   }
 }
-
-// const url = 'http://devg.ischool.com.tw:8080/dsa/dev.sh_d/admin/UDSManagerService.ExportContract?stt=basic&username=admin&password=1campus12%23%24&body=%3CRequest%3E%20%3CContractName%3E1campus.mobile.v2.student%3C/ContractName%3E%3C/Request%3E';
-
-// HttpClient.get(url).then(rsp => {
-//     console.log(rsp);
-// });
-
-// const body = `
-// <Envelope>
-// 	<Header>
-// 		<TargetService>UDSManagerService.ExportContract</TargetService>
-// 		<TargetContract>admin</TargetContract>
-// 		<SecurityToken Type="Basic">
-//             <UserName>admin</UserName>
-//             <Password>1campus12#$</Password>
-// 		</SecurityToken>
-// 	</Header>
-// 	<Body>
-// 		<Request>
-// 			<ContractName>1campus.mobile.v2.student</ContractName>
-// 		</Request>
-// 	</Body>
-// </Envelope>
-// `
-
-// HttpClient.post("http://devg.ischool.com.tw:8080/dsa/dev.sh_d", body).then(rsp => {
-//     console.log(rsp);
-// }, err => {
-//     console.log(err);
-// })

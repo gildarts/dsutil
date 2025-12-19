@@ -1,11 +1,8 @@
 export declare class DSAHttpClient {
-    /** TODO: 需要優化可靠度。 */
-    static post(url: string, xmlString?: string): Promise<{
+    static post(url: string, xmlString?: string, timeoutMs?: number): Promise<{
         body: string;
-    } | {
-        body: {};
     }>;
-    static get(url: string): Promise<{
+    static get(url: string, timeoutMs?: number): Promise<{
         body: string;
     }>;
 }
