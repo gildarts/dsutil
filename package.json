@@ -7,7 +7,9 @@
   "scripts": {
     "start": "webpack-dev-server",
     "deploy": "npm publish --access=public",
-    "build": "webpack"
+    "build": "webpack",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "author": "Yaoming Huang",
   "license": "ISC",
@@ -18,12 +20,14 @@
   "devDependencies": {
     "@types/got": "^9.6.11",
     "@types/node": "^25.0.3",
+    "@vitest/ui": "^4.0.16",
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.2",
     "ts-loader": "^4.4.2",
     "tsconfig-paths-webpack-plugin": "^3.2.0",
     "tslib": "^2.0.0",
     "typescript": "^5.9.3",
+    "vitest": "^4.0.16",
     "webpack": "^4.15.1",
     "webpack-cli": "^3.0.8",
     "webpack-dev-server": "^3.1.4"
